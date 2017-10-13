@@ -4,7 +4,9 @@
 
 % 1. Write a function to generate an 8-bit image of size 1024x1024 with a random value 
 % of the intensity in each pixel. Call your image rand8bit.tif. 
-
+[img]=randimg(1024,8)
+imwrite(img,'rand8bit.tif')
+imshow(img,[])
 % 2. Write a function that takes an integer value as input and outputs a
 % 1024x1024 binary image mask containing 20 circles of that size in random
 % locations
