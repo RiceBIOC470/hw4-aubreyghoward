@@ -43,8 +43,7 @@ figure(4); xlabel('Circle Size'); ylabel('Standard Deviation of Circle Intensity
 %We see a that as size of the circles increases to include more and more of 
 %the same pixals as other circles, the standard deviation between those
 %circles goes towards 0. Similarlly, the Average intensity of those circles
-%trend towards a 128, which is the median pixal intensity value in an 8 bit
-%image. 
+%trend towards a 128, which is the middle pixal value . 
 %%
 
 %Problem 2. Here is some data showing an NFKB reporter in ovarian cancer

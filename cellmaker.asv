@@ -1,0 +1,17 @@
+% 2. Write a function that takes an integer value as input and outputs a
+% 1024x1024 binary image mask containing 20 circles of that size in random
+% locations
+
+function img = cellmaker(cellsize)
+    img = false(1024);
+    centers = round(rand([20,2])*1024);
+    img(centers(1, = 2^8;
+    
+    img_mask = img > 0.5;
+    img = imdilate(img_mask,strel('disk',15));
+%     imgx2 = img2double(img)
+%     img_mask = imgx2 > 0.8
+%     centers = round(rand([20,2])*1024)
+%     img = imdilate(img,strel('disk',cellsize))
+
+end
