@@ -62,9 +62,57 @@ figure(4); xlabel('Circle Size'); ylabel('Standard Deviation of Circle Intensity
 %you used and save your .avi file in your repository (low quality ok for
 %space). 
 
+%First, I added both images to Fiji by File>Import>TIFF Virtual Stack. Next
+%I used the Image>Stacks>Zproject>Max Intensity function for every slice to
+%bring up the brightest pixels in each image. I concatenated the files
+%using the Image>Stacks>Tools>Concatonate, selecting MAX_nfkb_movie1.tif 
+%MAX_nfkb_movie2.tif as my two image inputs. Finally, as the nuclei are
+%tagged with YFP and the chanel two is tagged with RFP, I set the colors 
+%Image>Color>Merge Channels> selecting Channel 1 as green(analogous to yellow)
+%and Channel 2 as red. I saved the image using FILE>Save As>AVI
+
+
 %Part 2. Perform the same operations as in part 1 but use MATLAB code. You don't
 %need to save the result in your repository, just the code that produces
 %it. 
+
+img1 = bfGetReader('nfkb_movie1.tif');
+img2 = bfGetReader('nfkb_movie2.tif');
+
+chan = 1;
+time = 1; 
+for ii = 1:img1.getSizeZ
+    iplane = img1.getIndex(ii-1,chan-1,time-1)+1;
+    imgtemp1 = bfGetPlane(img1,iplane);
+    imgtemp1 = im2double(imgtemp1);
+    
+    imgtemp_sm = imfilter(imgtemp1,fspecial('gaussian',4,2));
+    imgtemp_bg = imopen(imgtemp_sm,strel('disk',100));
+    imgtemp1 = imsubtract(imgtemp_sm,imgtemp_bg);
+    
+   
+    imgtemp_dilate = imdilate(imgtemp1,strel('disk',25));
+    imgtemp1 = imgtemp1./imgtemp_dilate;
+    figure(ii); 
+    %imshow(imgtemp1,[])
+    imgtemp1(imgtemp1 < 0.5)= 0;
+    imshow(imgtemp1,[])
+    %figure(ii);imshow(imgtemp1,[]);
+end
+
+% for ii = 1:img2.getSizeZ
+%     iplane = img1.getIndex(ii-1,chan-1,time-1)+1;
+%     imgtemp2 = bfGetPlane(img2,iplane);
+%     imgtemp2 = im2double(imgtemp2);
+%     
+%     imgtemp_sm = imfilter(imgtemp2,fspecial('gaussian',4,2));
+%     imgtemp_bg = imopen(imgtemp_sm,strel('disk',100));
+%     imgtemp2 = imsubtract(imgtemp_sm,imgtemp_bg);
+%     
+%     imgtemp_dilate = imdilate(imgtemp2,strel('disk',25));
+%     imgtemp2 = imgtemp2./imgtemp_dilate;
+%     figure(ii+img1.getSizeZ);imshow(imgtemp2,[]);
+% end
 
 
 %%
