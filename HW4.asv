@@ -174,11 +174,11 @@ x =1;
 % 1. Use your MATLAB code from Problem 2, Part 2  to generate a maximum
 % intensity projection image of the first channel of the first time point
 % of movie 1.
-img1 = bfGetReader('nfkb_movie1.tif');
+
     ind1 = img1.getIndex(0,0,0)+1;
     img_max1 = bfGetPlane(img1,ind1);
         for ii = 2:img1.getSizeZ
-        ind1 = img1.getIndex(ii-1,0,0)+1;
+        ind1 = img1.getIndex(ii-1,0,i-1)+1;
         imgTemp_ch1 = bfGetPlane(img1,ind1);
         img_max1 = max(img_max1,imgTemp_ch1);
         end
@@ -189,8 +189,7 @@ figure(x);imshow(img_max1,[]);
 % on an image and apply it to the image from (1). Any necessary parameters
 % (e.g. smoothing radius) should be inputs to the function. Choose them
 % appropriately when calling the function.
-[img2show] = manipulateImage(img_max1,'gaussian',4,2);
-imshow(img2show,[]);
+
 % 3. Write  a function which automatically determines a threshold  and
 % thresholds an image to make a binary mask. Apply this to your output
 % image from 2. 
