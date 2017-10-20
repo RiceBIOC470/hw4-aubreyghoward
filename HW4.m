@@ -86,7 +86,7 @@ ind2 = img1.getIndex(0,1,0)+1;
 img1_brt1 = bfGetPlane(img1,ind1);
 img1_brt2 = bfGetPlane(img1,ind1);
 img1_brt = cat(3,img1_brt2,img1_brt1,zeros(size(img1_brt1)));
-for i = 1:img1.getSizeT;
+for i = 1:img1.getSizeT
     ind1 = img1.getIndex(0,0,0)+1;
     ind2 = img1.getIndex(0,1,0)+1;
     img_max1 = bfGetPlane(img1,ind1);
@@ -113,7 +113,7 @@ for i = 1:img2.getSizeT;
     ind1 = img2.getIndex(0,0,0)+1;
     ind2 = img2.getIndex(0,1,0)+1;
     img_max1 = bfGetPlane(img1,ind2);
-    img_max2 = bfGetPlane(img2,ind2);
+    img_max2 = bfGetPlane(img2,ind2); 
         for ii = 2:img2.getSizeZ
         ind1 = img2.getIndex(ii-1,0,i-1)+1;
         ind2 = img2.getIndex(ii-1,1,i-1)+1;
@@ -189,15 +189,21 @@ figure(x);imshow(img_max1,[]);
 % on an image and apply it to the image from (1). Any necessary parameters
 % (e.g. smoothing radius) should be inputs to the function. Choose them
 % appropriately when calling the function.
-[img2show] = manipulateImage(img_max1,'gaussian',4,2);
-imshow(img2show,[]);
+img2show = manipulateImage(img_max1,'gaussian',5,3);
+x = x+1;figure(x);imshow(img2show,[]);
 % 3. Write  a function which automatically determines a threshold  and
 % thresholds an image to make a binary mask. Apply this to your output
 % image from 2. 
 
+img2show = autothresh(img2show);
+x = x+1; figure(x);imshow(img2show);
+
 % 4. Write a function that "cleans up" this binary mask - i.e. no small
 % dots, or holes in nuclei. It should line up as closely as possible with
 % what you perceive to be the nuclei in your image. 
+
+img2show = imclean(img2show,5);
+x = x+1; figure(x);imshow(img2show);
 
 % 5. Write a function that uses your image from (2) and your mask from 
 % (4) to get a. the number of cells in the image. b. the mean area of the
