@@ -86,14 +86,14 @@ ind2 = img1.getIndex(0,1,0)+1;
 img1_brt1 = bfGetPlane(img1,ind1);
 img1_brt2 = bfGetPlane(img1,ind1);
 img1_brt = cat(3,img1_brt2,img1_brt1,zeros(size(img1_brt1)));
-for i = 1:img1.getSizeT
+for ii = 1:img1.getSizeT
     ind1 = img1.getIndex(0,0,0)+1;
     ind2 = img1.getIndex(0,1,0)+1;
     img_max1 = bfGetPlane(img1,ind1);
     img_max2 = bfGetPlane(img1,ind2);
         for ii = 2:img1.getSizeZ
-        ind1 = img1.getIndex(ii-1,0,i-1)+1;
-        ind2 = img1.getIndex(ii-1,1,i-1)+1;
+        ind1 = img1.getIndex(ii-1,0,ii-1)+1;
+        ind2 = img1.getIndex(ii-1,1,ii-1)+1;
         imgTemp_ch1 = bfGetPlane(img1,ind1);
         imgTemp_ch2 = bfGetPlane(img1,ind2);
         img_max1 = max(img_max1,imgTemp_ch1);
@@ -109,14 +109,14 @@ ind2 = img2.getIndex(0,1,0)+1;
 img2_brt1 = bfGetPlane(img2,ind1);
 img2_brt2 = bfGetPlane(img2,ind1);
 img2_brt = cat(3,img2_brt2,img2_brt1,zeros(size(img2_brt1)));
-for i = 1:img2.getSizeT;
+for ii = 1:img2.getSizeT;
     ind1 = img2.getIndex(0,0,0)+1;
     ind2 = img2.getIndex(0,1,0)+1;
     img_max1 = bfGetPlane(img1,ind2);
     img_max2 = bfGetPlane(img2,ind2); 
         for ii = 2:img2.getSizeZ
-        ind1 = img2.getIndex(ii-1,0,i-1)+1;
-        ind2 = img2.getIndex(ii-1,1,i-1)+1;
+        ind1 = img2.getIndex(ii-1,0,ii-1)+1;
+        ind2 = img2.getIndex(ii-1,1,ii-1)+1;
         imgTemp_ch1 = bfGetPlane(img2,ind1);
         imgTemp_ch2 = bfGetPlane(img2,ind2);
         img_max1 = max(img_max1,imgTemp_ch1);
@@ -175,6 +175,7 @@ x =1;
 % intensity projection image of the first channel of the first time point
 % of movie 1.
 img1 = bfGetReader('nfkb_movie1.tif');
+img2 = bfGetReader('nfkb_movie2.tif');
     ind1 = img1.getIndex(0,0,0)+1;
     img_max1 = bfGetPlane(img1,ind1);
         for ii = 2:img1.getSizeZ
@@ -208,17 +209,69 @@ x = x+1; figure(x);imshow(img2show);
 % 5. Write a function that uses your image from (2) and your mask from 
 % (4) to get a. the number of cells in the image. b. the mean area of the
 % cells, and c. the mean intensity of the cells in channel 1. 
+[cellCount,cellArea,avgInt] = cellinfo(img_max1,img2show);
+
 
 % 6. Apply your function from (2) to make a smoothed, background subtracted
 % image from channel 2 that corresponds to the image we have been using
 % from channel 1 (that is the max intensity projection from the same time point). Apply your
 % function from 5 to get the mean intensity of the cells in this channel. 
-%%
-% Problem 4. 
+    ind1 = img1.getIndex(0,2,0)+1;
+    img_max2 = bfGetPlane(img1,ind1);
+        for ii = 2:img1.getSizeZ
+        ind1 = img1.getIndex(ii-1,0,0)+1;
+        imgTemp_ch2 = bfGetPlane(img1,ind1);
+        img_max2 = max(img_max2,imgTemp_ch2);
+        end
+%figure(x);imshow(img_max2,[])
+img2show2 = manipulateImage(img_max2,'gaussian',5,3);
+imgMask = autothresh(img_max2);
+imgMask = imclean(imgMask,8);
+[cellCount,cellArea,avgInt] = cellinfo(img2show2,imgMask);
 
+%%
+
+% Problem 4. 
+clear all
 % 1. Write a loop that calls your functions from Problem 3 to produce binary masks
 % for every time point in the two movies. Save a movie of the binary masks.
-% 
+img1 = bfGetReader('nfkb_movie1.tif');
+img2 = bfGetReader('nfkb_movie2.tif');
+
+ind1 = img1.getIndex(0,0,0)+1;
+maskmovie1 = bfGetPlane(img1,ind1);
+for i = 1:img1.getSizeT
+    i
+    ind1 = img1.getIndex(0,0,i-1)+1;
+    img_max = bfGetPlane(img1,ind1);
+%     
+%         for ii = 1:img1.getSizeZ
+%         ind1 = img1.getIndex(ii-1,0,i-1)+1;
+%         imgTemp_ch1 = bfGetPlane(img1,ind1);
+%         img_max = max(img_max,imgTemp_ch1);
+%         end
+    figure(1);subplot(5,4,i);imshow(img_max,[]);
+    imgTemp = autothresh(im2double(img_max));
+    figure(2);subplot(5,4,i);imshow(imgTemp,[]);
+    imgTemp = imclean(imgTemp,3);
+    figure(3);subplot(5,4,i);imshow(imgTemp,[]);
+    maskmovie1 = cat(4,maskmovie1,imgTemp);
+end
+imwrite(maskmovie1,'nfkb_maskmovie1.tif','TIFF');
+
+ind2 = img2.getIndex(0,0,0)+1;
+maskmovie2 = bfGetPlane(img2,ind2);
+for ii = 1:img2.getSizeT
+    ii
+    ind2 = img2.getIndex(0,0,ii-1)+1;
+    imgTemp = bfGetPlane(img2,ind2);
+    imgTemp = autothresh(imgTemp);
+    imgTemp = imclean(imgTemp,8);
+    maskmovie2 = cat(4,maskmovie2,imgTemp);
+end
+imwrite(maskmovie2,'nfkb_maskmovie2.tif','TIFF');
+
+
 % 2. Use a loop to call your function from problem 3, part 5 on each one of
 % these masks and the corresponding images and 
 % get the number of cells and the mean intensities in both
